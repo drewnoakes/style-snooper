@@ -58,7 +58,7 @@ namespace StyleSnooper
             }
         }
 
-        private Type[] GetFrameworkElementTypesFromAssembly(Assembly asm)
+        private static Type[] GetFrameworkElementTypesFromAssembly(Assembly asm)
         {
             // create a list of all types in PresentationFramework that are non-abstract,
             // and non-generic, derive from FrameworkElement, and have a default constructor
