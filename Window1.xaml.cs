@@ -36,11 +36,7 @@ namespace StyleSnooper
                 Multiselect = false,
                 Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll"
             };
-        }
 
-        private void SandAndFire(object sender, EventArgs e)
-        {
-            GlassHelper.TryExtendGlassFrame(this, styleTextBox.Margin);
         }
 
         private Type[] _elementTypes;

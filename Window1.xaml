@@ -7,8 +7,8 @@
 	Title="StyleSnooper"
 	Background="LightGray"
 	ResizeMode="CanResizeWithGrip" 
-	Width="1000" Height="800"
-  SourceInitialized="SandAndFire">
+	Width="1000" 
+  Height="800">
   <Window.Resources>
     <Style x:Key="BracketStyle" TargetType="{x:Type Run}">
       <Setter Property="Foreground" Value="Blue" />
