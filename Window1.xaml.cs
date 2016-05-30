@@ -19,6 +19,8 @@ namespace StyleSnooper
 
         public Window1()
         {
+            ElementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
+
             InitializeComponent();
 
             // get syntax coloring styles
@@ -38,8 +40,6 @@ namespace StyleSnooper
                 Multiselect = false,
                 Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll"
             };
-
-            ElementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
         }
 
         public Type[] ElementTypes { get; private set; }
