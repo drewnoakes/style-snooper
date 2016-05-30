@@ -64,10 +64,7 @@ namespace StyleSnooper
             }
 
             // sort the types by name
-            typeList.Sort(delegate(Type typeA, Type typeB)
-            {
-                return String.CompareOrdinal(typeA.Name, typeB.Name);
-            });
+            typeList.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
             
             return typeList.ToArray();
         }
