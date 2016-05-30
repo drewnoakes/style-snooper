@@ -39,21 +39,10 @@ namespace StyleSnooper
                 Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll"
             };
 
+            ElementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
         }
 
-        private Type[] _elementTypes;
-        public Type[] ElementTypes
-        {
-            get
-            {
-                if (_elementTypes == null)
-                {
-                    _elementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
-                }
-
-                return _elementTypes;
-            }
-        }
+        public Type[] ElementTypes { get; private set; }
 
         private static Type[] GetFrameworkElementTypesFromAssembly(Assembly asm)
         {
@@ -97,7 +86,7 @@ namespace StyleSnooper
                     }
                     else
                     {
-                        _elementTypes = types;
+                        ElementTypes = types;
                         OnPropertyChanged(nameof(ElementTypes));
                     }
                 }
