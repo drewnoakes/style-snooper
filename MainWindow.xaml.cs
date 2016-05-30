@@ -12,12 +12,12 @@ using System.Runtime.CompilerServices;
 
 namespace StyleSnooper
 {
-    public partial class Window1 : INotifyPropertyChanged
+    public partial class MainWindow : INotifyPropertyChanged
     {
         private readonly Style _bracketStyle, _elementStyle, _quotesStyle, _textStyle, _attributeStyle;
         private readonly Microsoft.Win32.OpenFileDialog _openFileDialog;
 
-        public Window1()
+        public MainWindow()
         {
             ElementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
 
