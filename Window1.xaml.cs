@@ -146,7 +146,7 @@ namespace StyleSnooper
                     catch (Exception exception)
                     {
                         serializedStyle = "[Exception thrown while serializing style]" +
-                            Environment.NewLine + Environment.NewLine + exception.ToString();
+                            Environment.NewLine + Environment.NewLine + exception;
                     }
                 }
             }
