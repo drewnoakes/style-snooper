@@ -71,26 +71,26 @@ namespace StyleSnooper
 
         private void OnLoadClick(object sender, RoutedEventArgs e)
         {
-            if (_openFileDialog.ShowDialog(this) == true)
+            if (_openFileDialog.ShowDialog(this) != true)
+                return;
+
+            try
             {
-                try
+                AsmName.Text = _openFileDialog.FileName;
+                var types = GetFrameworkElementTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
+                if (types.Length == 0)
                 {
-                    AsmName.Text = _openFileDialog.FileName;
-                    var types = GetFrameworkElementTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
-                    if (types.Length == 0)
-                    {
-                        MessageBox.Show("Assembly does not contain any compatible types.");
-                    }
-                    else
-                    {
-                        ElementTypes = types;
-                        OnPropertyChanged(nameof(ElementTypes));
-                    }
+                    MessageBox.Show("Assembly does not contain any compatible types.");
                 }
-                catch
+                else
                 {
-                    MessageBox.Show("Error loading assembly.");
+                    ElementTypes = types;
+                    OnPropertyChanged(nameof(ElementTypes));
                 }
+            }
+            catch
+            {
+                MessageBox.Show("Error loading assembly.");
             }
         }
 
