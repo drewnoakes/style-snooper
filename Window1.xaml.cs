@@ -31,10 +31,12 @@ namespace StyleSnooper
             CollectionViewSource.GetDefaultView(this.ElementTypes).MoveCurrentTo(typeof(Button));
 
             // create the file open dialog
-            _openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            _openFileDialog.CheckFileExists = true;
-            _openFileDialog.Multiselect = false;
-            _openFileDialog.Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll";
+            _openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                CheckFileExists = true,
+                Multiselect = false,
+                Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll"
+            };
         }
 
         private void SandAndFire(object sender, EventArgs e)
