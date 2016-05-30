@@ -137,8 +137,7 @@ namespace StyleSnooper
                     try
                     {
                         var stringWriter = new StringWriter();
-                        var xmlTextWriter = new XmlTextWriter(stringWriter);
-                        xmlTextWriter.Formatting = Formatting.Indented;
+                        var xmlTextWriter = new XmlTextWriter(stringWriter) {Formatting = Formatting.Indented};
                         System.Windows.Markup.XamlWriter.Save(style, xmlTextWriter);
                         serializedStyle = stringWriter.ToString();
 
@@ -236,9 +235,7 @@ namespace StyleSnooper
             }
             else // no style found
             {
-                var par = new Paragraph(new Run(serializedStyle));
-                par.TextAlignment = TextAlignment.Left;
-                document.Blocks.Add(par);
+                document.Blocks.Add(new Paragraph(new Run(serializedStyle)) {TextAlignment = TextAlignment.Left});
             }
             return document;
         }
@@ -251,9 +248,7 @@ namespace StyleSnooper
         /// <param name="s"></param>
         private static void AddRun(Paragraph par, Style style, string s)
         {
-            var run = new Run(s);
-            run.Style = style;
-            par.Inlines.Add(run);
+            par.Inlines.Add(new Run(s) {Style = style});
         }
 
         #region INotifyPropertyChanged
