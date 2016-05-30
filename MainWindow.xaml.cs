@@ -213,6 +213,8 @@ namespace StyleSnooper
                         }
                         else // closing tag, e.g. </Button>
                         {
+                            --indent;
+
                             // indentation
                             AddRun(paragraph, _textStyle, new string(' ', indent * 4));
 
@@ -226,8 +228,6 @@ namespace StyleSnooper
                             AddRun(paragraph, _elementStyle, reader.Name);
                             AddRun(paragraph, _bracketStyle, ">");
                             paragraph.Inlines.Add(new LineBreak());
-
-                            --indent;
                         }
                     }
                     document.Blocks.Add(paragraph);
