@@ -51,14 +51,14 @@ namespace StyleSnooper
             {
                 if (_elementTypes == null)
                 {
-                    _elementTypes = GetFrameworkElemenetTypesFromAssembly(typeof(FrameworkElement).Assembly);
+                    _elementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
                 }
 
                 return _elementTypes;
             }
         }
 
-        private Type[] GetFrameworkElemenetTypesFromAssembly(Assembly asm)
+        private Type[] GetFrameworkElementTypesFromAssembly(Assembly asm)
         {
             // create a list of all types in PresentationFramework that are non-abstract,
             // and non-generic, derive from FrameworkElement, and have a default constructor
@@ -93,7 +93,7 @@ namespace StyleSnooper
                 try
                 {
                     AsmName.Text = _openFileDialog.FileName;
-                    Type[] types = GetFrameworkElemenetTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
+                    Type[] types = GetFrameworkElementTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
                     if (types.Length == 0)
                     {
                         MessageBox.Show("Assembly does not contain any compatible types.");
