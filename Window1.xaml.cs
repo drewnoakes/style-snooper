@@ -44,12 +44,12 @@ namespace StyleSnooper
 
         public Type[] ElementTypes { get; private set; }
 
-        private static Type[] GetFrameworkElementTypesFromAssembly(Assembly asm)
+        private static Type[] GetFrameworkElementTypesFromAssembly(Assembly assembly)
         {
             // create a list of all types in PresentationFramework that are non-abstract,
             // and non-generic, derive from FrameworkElement, and have a default constructor
-            List<Type> typeList = new List<Type>();
-            foreach (Type type in asm.GetTypes())
+            var typeList = new List<Type>();
+            foreach (var type in assembly.GetTypes())
             {
                 if (// type.IsPublic && // maybe we wanna peek at nonpublic ones?
                     !type.IsAbstract &&
@@ -79,7 +79,7 @@ namespace StyleSnooper
                 try
                 {
                     AsmName.Text = _openFileDialog.FileName;
-                    Type[] types = GetFrameworkElementTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
+                    var types = GetFrameworkElementTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
                     if (types.Length == 0)
                     {
                         MessageBox.Show("Assembly does not contain any compatible types.");
@@ -102,11 +102,11 @@ namespace StyleSnooper
             if (styleTextBox == null) return;
 
             // see which type is selected
-            Type type = typeComboBox.SelectedValue as Type;
+            var type = typeComboBox.SelectedValue as Type;
             if (type != null)
             {
                 string serializedStyle;
-                bool success = TrySerializeStyle(type, out serializedStyle);
+                var success = TrySerializeStyle(type, out serializedStyle);
 
                 // show the style in a document viewer
                 styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
@@ -121,26 +121,26 @@ namespace StyleSnooper
         /// <returns></returns>
         private static bool TrySerializeStyle(Type type, out string serializedStyle)
         {
-            bool success = false;
+            var success = false;
             serializedStyle = "[Style not found]";
             
             // make an instance of the type and get its default style key
-            bool nonPublic = type.GetConstructor(Type.EmptyTypes) == null;
-            FrameworkElement element = (FrameworkElement)Activator.CreateInstance(type, nonPublic);
+            var nonPublic = type.GetConstructor(Type.EmptyTypes) == null;
+            var element = (FrameworkElement)Activator.CreateInstance(type, nonPublic);
 
-            object defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
+            var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
             
             if (defaultStyleKey != null)
             {
                 // try to get the default style for the type
-                Style style = Application.Current.TryFindResource(defaultStyleKey) as Style;
+                var style = Application.Current.TryFindResource(defaultStyleKey) as Style;
                 if (style != null)
                 {
                     // try to serialize the style
                     try
                     {
-                        StringWriter stringWriter = new StringWriter();
-                        XmlTextWriter xmlTextWriter = new XmlTextWriter(stringWriter);
+                        var stringWriter = new StringWriter();
+                        var xmlTextWriter = new XmlTextWriter(stringWriter);
                         xmlTextWriter.Formatting = Formatting.Indented;
                         System.Windows.Markup.XamlWriter.Save(style, xmlTextWriter);
                         serializedStyle = stringWriter.ToString();
@@ -165,13 +165,13 @@ namespace StyleSnooper
         /// <returns></returns>
         private FlowDocument CreateFlowDocument(bool success, string serializedStyle)
         {
-            FlowDocument document = new FlowDocument();
+            var document = new FlowDocument();
             if (success)
             {
-                using (XmlTextReader reader = new XmlTextReader(serializedStyle, XmlNodeType.Document, null))
+                using (var reader = new XmlTextReader(serializedStyle, XmlNodeType.Document, null))
                 {
-                    int indent = 0;
-                    Paragraph paragraph = new Paragraph();
+                    var indent = 0;
+                    var paragraph = new Paragraph();
                     while (reader.Read())
                     {
                         if (reader.IsStartElement()) // opening tag, e.g. <Button
@@ -239,7 +239,7 @@ namespace StyleSnooper
             }
             else // no style found
             {
-                Paragraph par = new Paragraph(new Run(serializedStyle));
+                var par = new Paragraph(new Run(serializedStyle));
                 par.TextAlignment = TextAlignment.Left;
                 document.Blocks.Add(par);
             }
@@ -254,7 +254,7 @@ namespace StyleSnooper
         /// <param name="s"></param>
         private static void AddRun(Paragraph par, Style style, string s)
         {
-            Run run = new Run(s);
+            var run = new Run(s);
             run.Style = style;
             par.Inlines.Add(run);
         }
