@@ -12,7 +12,7 @@ namespace StyleSnooper
 {
     public partial class Window1
     {
-        private readonly Style _bracketStyle, _elementStyle, _quotesStyle, _textStyle, _attributeStyle, _commentStyle;
+        private readonly Style _bracketStyle, _elementStyle, _quotesStyle, _textStyle, _attributeStyle;
         private readonly Microsoft.Win32.OpenFileDialog _openFileDialog;
 
         public Window1()
@@ -25,7 +25,6 @@ namespace StyleSnooper
             _quotesStyle    = (Style)Resources["QuotesStyle"];
             _textStyle      = (Style)Resources["TextStyle"];
             _attributeStyle = (Style)Resources["AttributeStyle"];
-            _commentStyle   = (Style)Resources["CommentStyle"];
 
             // start out by looking at Button
             CollectionViewSource.GetDefaultView(ElementTypes).MoveCurrentTo(typeof(Button));
