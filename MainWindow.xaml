@@ -24,9 +24,6 @@
     <Style x:Key="AttributeStyle" TargetType="{x:Type Run}">
       <Setter Property="Foreground" Value="Black" />
     </Style>
-    <Style x:Key="CommentStyle" TargetType="{x:Type Run}">
-      <Setter Property="Foreground" Value="Green" />
-    </Style>
     <Style TargetType="{x:Type Paragraph}">
       <Setter Property="FontFamily" Value="Consolas" />
       <Setter Property="TextAlignment" Value="Left" />
