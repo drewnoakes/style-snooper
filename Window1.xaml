@@ -4,11 +4,10 @@
 	xml:lang="en-US"
 	x:Class="StyleSnooper.Window1"
 	Name="window"
-	Title="StyleSnooper"
-	Background="LightGray"
-	ResizeMode="CanResizeWithGrip" 
-	Width="1000" 
+	Title="WPF Style Snooper"
+	Width="1000"
   Height="800">
+  
   <Window.Resources>
     <Style x:Key="BracketStyle" TargetType="{x:Type Run}">
       <Setter Property="Foreground" Value="Blue" />
@@ -31,7 +30,7 @@
     <Style TargetType="{x:Type Paragraph}">
       <Setter Property="FontFamily" Value="Consolas" />
       <Setter Property="TextAlignment" Value="Left" />
-      <Setter Property="Background" Value="#eeeeee" />
+      <Setter Property="Background" Value="White" />
     </Style>
   </Window.Resources>
 
