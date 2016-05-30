@@ -8,7 +8,7 @@ namespace StyleSnooper
 {
     public static class GlassHelper
     {
-        struct MARGINS
+        private struct MARGINS
         {
             public MARGINS(Thickness t)
             {
@@ -17,6 +17,7 @@ namespace StyleSnooper
                 Top = (int)t.Top;
                 Bottom = (int)t.Bottom;
             }
+
             public int Left;
             public int Right;
             public int Top;

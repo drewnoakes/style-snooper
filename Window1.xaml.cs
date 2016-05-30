@@ -12,8 +12,8 @@ namespace StyleSnooper
 {
     public partial class Window1
     {
-        Style bracketStyle, elementStyle, quotesStyle, textStyle, attributeStyle, commentStyle;
-        Microsoft.Win32.OpenFileDialog openFileDialog;
+        private readonly Style bracketStyle, elementStyle, quotesStyle, textStyle, attributeStyle, commentStyle;
+        private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
 
         public Window1()
         {
@@ -37,7 +37,7 @@ namespace StyleSnooper
             openFileDialog.Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll";
         }
 
-        void SandAndFire(object sender, EventArgs e)
+        private void SandAndFire(object sender, EventArgs e)
         {
             GlassHelper.TryExtendGlassFrame(this, styleTextBox.Margin);
         }
@@ -84,7 +84,7 @@ namespace StyleSnooper
             return typeList.ToArray();
         }
 
-        void OnLoadClick(object sender, RoutedEventArgs e)
+        private void OnLoadClick(object sender, RoutedEventArgs e)
         {
             if (openFileDialog.ShowDialog(this) == true)
             {
