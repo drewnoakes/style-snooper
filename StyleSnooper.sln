@@ -11,6 +11,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{21D8B0CD-05C1-4CF1-8079-068AB0A50409}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{21D8B0CD-05C1-4CF1-8079-068AB0A50409}.Debug|Any CPU.Build.0 = Debug|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
