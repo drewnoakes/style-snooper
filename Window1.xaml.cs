@@ -20,12 +20,12 @@ namespace StyleSnooper
             InitializeComponent();
 
             // get syntax coloring styles
-            _bracketStyle = Resources["BracketStyle"] as Style;
-            _elementStyle = Resources["ElementStyle"] as Style;
-            _quotesStyle = Resources["QuotesStyle"] as Style;
-            _textStyle = Resources["TextStyle"] as Style;
-            _attributeStyle = Resources["AttributeStyle"] as Style;
-            _commentStyle = Resources["CommentStyle"] as Style;
+            _bracketStyle   = (Style)Resources["BracketStyle"];
+            _elementStyle   = (Style)Resources["ElementStyle"];
+            _quotesStyle    = (Style)Resources["QuotesStyle"];
+            _textStyle      = (Style)Resources["TextStyle"];
+            _attributeStyle = (Style)Resources["AttributeStyle"];
+            _commentStyle   = (Style)Resources["CommentStyle"];
 
             // start out by looking at Button
             CollectionViewSource.GetDefaultView(ElementTypes).MoveCurrentTo(typeof(Button));
