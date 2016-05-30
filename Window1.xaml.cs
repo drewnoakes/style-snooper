@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,10 +8,11 @@ using System.Windows.Data;
 using System.Xml;
 using System.Windows.Documents;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace StyleSnooper
 {
-    public partial class Window1
+    public partial class Window1 : INotifyPropertyChanged
     {
         private readonly Style _bracketStyle, _elementStyle, _quotesStyle, _textStyle, _attributeStyle;
         private readonly Microsoft.Win32.OpenFileDialog _openFileDialog;
@@ -96,9 +98,7 @@ namespace StyleSnooper
                     else
                     {
                         _elementTypes = types;
-
-                        BindingExpression exp = BindingOperations.GetBindingExpression(typeComboBox, ItemsControl.ItemsSourceProperty);
-                        exp.UpdateTarget();
+                        OnPropertyChanged(nameof(ElementTypes));
                     }
                 }
                 catch
@@ -269,5 +269,16 @@ namespace StyleSnooper
             run.Style = style;
             par.Inlines.Add(run);
         }
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }
