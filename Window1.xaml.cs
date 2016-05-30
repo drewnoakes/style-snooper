@@ -17,7 +17,7 @@ namespace StyleSnooper
 
         public Window1()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // get syntax coloring styles
             _bracketStyle = Resources["BracketStyle"] as Style;
@@ -28,7 +28,7 @@ namespace StyleSnooper
             _commentStyle = Resources["CommentStyle"] as Style;
 
             // start out by looking at Button
-            CollectionViewSource.GetDefaultView(this.ElementTypes).MoveCurrentTo(typeof(Button));
+            CollectionViewSource.GetDefaultView(ElementTypes).MoveCurrentTo(typeof(Button));
 
             // create the file open dialog
             _openFileDialog = new Microsoft.Win32.OpenFileDialog
@@ -102,7 +102,7 @@ namespace StyleSnooper
                     {
                         _elementTypes = types;
 
-                        BindingExpression exp = BindingOperations.GetBindingExpression(typeComboBox, ComboBox.ItemsSourceProperty);
+                        BindingExpression exp = BindingOperations.GetBindingExpression(typeComboBox, ItemsControl.ItemsSourceProperty);
                         exp.UpdateTarget();
                     }
                 }
@@ -118,14 +118,14 @@ namespace StyleSnooper
             if (styleTextBox == null) return;
 
             // see which type is selected
-            Type type = this.typeComboBox.SelectedValue as Type;
+            Type type = typeComboBox.SelectedValue as Type;
             if (type != null)
             {
                 string serializedStyle;
                 bool success = TrySerializeStyle(type, out serializedStyle);
 
                 // show the style in a document viewer
-                this.styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
+                styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
             }
         }
 
@@ -144,7 +144,7 @@ namespace StyleSnooper
             bool nonPublic = type.GetConstructor(Type.EmptyTypes) == null;
             FrameworkElement element = (FrameworkElement)Activator.CreateInstance(type, nonPublic);
 
-            object defaultStyleKey = element.GetValue(FrameworkElement.DefaultStyleKeyProperty);
+            object defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
             
             if (defaultStyleKey != null)
             {
