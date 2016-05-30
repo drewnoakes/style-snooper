@@ -34,17 +34,26 @@
       <Setter Property="Background" Value="#eeeeee" />
     </Style>
   </Window.Resources>
-	<Grid Name="mainGrid">
-		<Label Name="typeLabel" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Content="Choose a type:"/>
-		<ComboBox Name="typeComboBox" HorizontalAlignment="Left" Margin="100,13,0,0" VerticalAlignment="Top" Width="200"
-            IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=ElementTypes, ElementName=window, Mode=OneWay}" DisplayMemberPath="Name"
-          SelectionChanged="ShowStyle"/>
-		<Label Name="namespaceLabel" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Content="Namespace:"/>
-		<Label Name="namespaceValue" HorizontalAlignment="Left" Margin="100,40,0,0" VerticalAlignment="Top" Content="{Binding ElementName=window, Path=ElementTypes/Namespace}"/>
-		<Label Name="styleLabel" HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Content="Default style:"/>
-    <Rectangle Fill="#eeeeee" Margin="{Binding ElementName=styleTextBox, Path=Margin, Mode=OneTime}" />
-    <FlowDocumentScrollViewer Name="styleTextBox" Margin="10,110,10,10" FontFamily="Consolas" />
-    <Button Click="OnLoadClick" Height="23" Margin="0,22,47,0" Name="button1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75">Load</Button>
-    <TextBox Name="AsmName" IsReadOnly="True" Height="26" HorizontalAlignment="Right" Margin="0,21,136,0" VerticalAlignment="Top" Width="306" />
-  </Grid>
+
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="10">
+      <Label DockPanel.Dock="Left" Name="typeLabel" Content="Choose a type" Width="100"/>
+      <ComboBox DockPanel.Dock="Left" 
+                Name="typeComboBox" 
+                Width="200" 
+                IsSynchronizedWithCurrentItem="True" 
+                ItemsSource="{Binding Path=ElementTypes, ElementName=window, Mode=OneWay}"
+                DisplayMemberPath="Name" 
+                SelectionChanged="ShowStyle"/>
+      <Button DockPanel.Dock="Right" Click="OnLoadClick" Height="23" Width="75" Name="button1" Margin="10,0,0,0">Load</Button>
+      <TextBox DockPanel.Dock="Right" Name="AsmName" IsReadOnly="True" Height="26" MinWidth="200"/>
+    </DockPanel>
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10,0">
+      <Label Name="namespaceLabel" Content="Namespace" Width="100"/>
+      <Label Name="namespaceValue" Content="{Binding ElementName=window, Path=ElementTypes/Namespace}"/>
+    </StackPanel>
+
+    <FlowDocumentScrollViewer Name="styleTextBox" FontFamily="Consolas" Background="White" Padding="0" />
+  </DockPanel>
+  
 </Window>
