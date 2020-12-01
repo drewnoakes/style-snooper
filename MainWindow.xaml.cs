@@ -72,40 +72,40 @@ namespace StyleSnooper
 
         List<StyleModel> GetStyles(Assembly assembly)
         {
-            var styleKeys = new List<StyleModel>();
+            var styles = new List<StyleModel>();
             var types = GetFrameworkElementTypesFromAssembly(assembly);
             foreach(var type in types)
             {
-                styleKeys.AddRange(GetStyles(type));
+                styles.AddRange(GetStyles(type));
             }
-            return styleKeys;
+            return styles;
         }
 
         List<StyleModel> GetStyles(Type type)
         {
-            var styleKeys = new List<StyleModel>();
+            var styles = new List<StyleModel>();
             // make an instance of the type and get its default style key
             if (type.GetConstructor(Type.EmptyTypes) != null)
             {
                 var element = (FrameworkElement)Activator.CreateInstance(type, false);
                 var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
-                styleKeys.Add(new StyleModel
+                styles.Add(new StyleModel
                 {
                     DisplayName = type.Name,
                     ResourceKey = defaultStyleKey,
                     ElementType = type,
                 });
 
-                var staticPropertyStyleKeys = GetStyleKeysFromStaticProperties(element);
-                styleKeys.AddRange(staticPropertyStyleKeys);
+                var staticPropertyStyles = GetStylesFromStaticProperties(element);
+                styles.AddRange(staticPropertyStyles);
 
             }
-            return styleKeys;
+            return styles;
         }
 
-        private List<StyleModel> GetStyleKeysFromStaticProperties(FrameworkElement element)
+        private List<StyleModel> GetStylesFromStaticProperties(FrameworkElement element)
         {
-            var styleKeys = new List<StyleModel>();
+            var styles = new List<StyleModel>();
 
             var properties = element.GetType()
                 .GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
@@ -115,7 +115,7 @@ namespace StyleSnooper
             {
                 var elementType = element.GetType();
                 var resourceKey = property.GetValue(element);
-                styleKeys.Add(new StyleModel
+                styles.Add(new StyleModel
                 {
                     DisplayName = $"{elementType.Name}.{property.Name}",
                     ResourceKey = resourceKey,
@@ -123,7 +123,7 @@ namespace StyleSnooper
                 });
             }
 
-            return styleKeys;
+            return styles;
         }
 
         private void OnLoadClick(object sender, RoutedEventArgs e)
@@ -134,14 +134,14 @@ namespace StyleSnooper
             try
             {
                 AsmName.Text = _openFileDialog.FileName;
-                var styleKeys = GetStyles(Assembly.LoadFile(_openFileDialog.FileName));
-                if (styleKeys.Count == 0)
+                var styles = GetStyles(Assembly.LoadFile(_openFileDialog.FileName));
+                if (styles.Count == 0)
                 {
                     MessageBox.Show("Assembly does not contain any compatible types.");
                 }
                 else
                 {
-                    Styles = styleKeys;
+                    Styles = styles;
                     OnPropertyChanged(nameof(Styles));
                 }
             }
@@ -156,11 +156,11 @@ namespace StyleSnooper
             if (styleTextBox == null) return;
 
             // see which type is selected
-            var styleKey = typeComboBox.SelectedValue as StyleModel;
-            if (styleKey != null)
+            var style = typeComboBox.SelectedValue as StyleModel;
+            if (style != null)
             {
                 string serializedStyle;
-                var success = TrySerializeStyle(styleKey.ResourceKey, out serializedStyle);
+                var success = TrySerializeStyle(style.ResourceKey, out serializedStyle);
 
                 // show the style in a document viewer
                 styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
@@ -170,7 +170,7 @@ namespace StyleSnooper
         /// <summary>
         /// Serializes a style using XamlWriter.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="resourceKey"></param>
         /// <param name="serializedStyle"></param>
         /// <returns></returns>
         private static bool TrySerializeStyle(object resourceKey, out string serializedStyle)
