@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Xml;
 using System.Windows.Documents;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace StyleSnooper
 {
@@ -19,7 +20,7 @@ namespace StyleSnooper
 
         public MainWindow()
         {
-            ElementTypes = GetFrameworkElementTypesFromAssembly(typeof(FrameworkElement).Assembly);
+            Styles = GetStyles(typeof(FrameworkElement).Assembly);
 
             InitializeComponent();
 
@@ -31,7 +32,7 @@ namespace StyleSnooper
             _attributeStyle = (Style)Resources["AttributeStyle"];
 
             // start out by looking at Button
-            CollectionViewSource.GetDefaultView(ElementTypes).MoveCurrentTo(typeof(Button));
+            CollectionViewSource.GetDefaultView(Styles).MoveCurrentTo(Styles.Single(s =>s.ElementType == typeof(Button)));
 
             // create the file open dialog
             _openFileDialog = new Microsoft.Win32.OpenFileDialog
@@ -42,7 +43,7 @@ namespace StyleSnooper
             };
         }
 
-        public Type[] ElementTypes { get; private set; }
+        public List<StyleModel> Styles { get; private set; }
 
         private static Type[] GetFrameworkElementTypesFromAssembly(Assembly assembly)
         {
@@ -65,8 +66,64 @@ namespace StyleSnooper
 
             // sort the types by name
             typeList.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-            
+
             return typeList.ToArray();
+        }
+
+        List<StyleModel> GetStyles(Assembly assembly)
+        {
+            var styleKeys = new List<StyleModel>();
+            var types = GetFrameworkElementTypesFromAssembly(assembly);
+            foreach(var type in types)
+            {
+                styleKeys.AddRange(GetStyles(type));
+            }
+            return styleKeys;
+        }
+
+        List<StyleModel> GetStyles(Type type)
+        {
+            var styleKeys = new List<StyleModel>();
+            // make an instance of the type and get its default style key
+            if (type.GetConstructor(Type.EmptyTypes) != null)
+            {
+                var element = (FrameworkElement)Activator.CreateInstance(type, false);
+                var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
+                styleKeys.Add(new StyleModel
+                {
+                    DisplayName = type.Name,
+                    ResourceKey = defaultStyleKey,
+                    ElementType = type,
+                });
+
+                var staticPropertyStyleKeys = GetStyleKeysFromStaticProperties(element);
+                styleKeys.AddRange(staticPropertyStyleKeys);
+
+            }
+            return styleKeys;
+        }
+
+        private List<StyleModel> GetStyleKeysFromStaticProperties(FrameworkElement element)
+        {
+            var styleKeys = new List<StyleModel>();
+
+            var properties = element.GetType()
+                .GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
+                .Where(p => p.Name.EndsWith("StyleKey") && p.PropertyType == typeof(ResourceKey));
+
+            foreach (var property in properties)
+            {
+                var elementType = element.GetType();
+                var resourceKey = property.GetValue(element);
+                styleKeys.Add(new StyleModel
+                {
+                    DisplayName = $"{elementType.Name}.{property.Name}",
+                    ResourceKey = resourceKey,
+                    ElementType = elementType,
+                });
+            }
+
+            return styleKeys;
         }
 
         private void OnLoadClick(object sender, RoutedEventArgs e)
@@ -77,15 +134,15 @@ namespace StyleSnooper
             try
             {
                 AsmName.Text = _openFileDialog.FileName;
-                var types = GetFrameworkElementTypesFromAssembly(Assembly.LoadFile(_openFileDialog.FileName));
-                if (types.Length == 0)
+                var styleKeys = GetStyles(Assembly.LoadFile(_openFileDialog.FileName));
+                if (styleKeys.Count == 0)
                 {
                     MessageBox.Show("Assembly does not contain any compatible types.");
                 }
                 else
                 {
-                    ElementTypes = types;
-                    OnPropertyChanged(nameof(ElementTypes));
+                    Styles = styleKeys;
+                    OnPropertyChanged(nameof(Styles));
                 }
             }
             catch
@@ -99,11 +156,11 @@ namespace StyleSnooper
             if (styleTextBox == null) return;
 
             // see which type is selected
-            var type = typeComboBox.SelectedValue as Type;
-            if (type != null)
+            var styleKey = typeComboBox.SelectedValue as StyleModel;
+            if (styleKey != null)
             {
                 string serializedStyle;
-                var success = TrySerializeStyle(type, out serializedStyle);
+                var success = TrySerializeStyle(styleKey.ResourceKey, out serializedStyle);
 
                 // show the style in a document viewer
                 styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
@@ -116,21 +173,15 @@ namespace StyleSnooper
         /// <param name="type"></param>
         /// <param name="serializedStyle"></param>
         /// <returns></returns>
-        private static bool TrySerializeStyle(Type type, out string serializedStyle)
+        private static bool TrySerializeStyle(object resourceKey, out string serializedStyle)
         {
             var success = false;
             serializedStyle = "[Style not found]";
-            
-            // make an instance of the type and get its default style key
-            var nonPublic = type.GetConstructor(Type.EmptyTypes) == null;
-            var element = (FrameworkElement)Activator.CreateInstance(type, nonPublic);
 
-            var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
-            
-            if (defaultStyleKey != null)
+            if (resourceKey != null)
             {
                 // try to get the default style for the type
-                var style = Application.Current.TryFindResource(defaultStyleKey) as Style;
+                var style = Application.Current.TryFindResource(resourceKey) as Style;
                 if (style != null)
                 {
                     // try to serialize the style

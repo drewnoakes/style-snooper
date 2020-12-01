@@ -1,55 +1,86 @@
 <Window
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xml:lang="en-US"
-	x:Class="StyleSnooper.MainWindow"
-	Name="window"
-	Title="WPF Style Snooper"
-	Width="1000"
-  Height="800">
-  
-  <Window.Resources>
-    <Style x:Key="BracketStyle" TargetType="{x:Type Run}">
-      <Setter Property="Foreground" Value="Blue" />
-    </Style>
-    <Style x:Key="ElementStyle" TargetType="{x:Type Run}">
-      <Setter Property="Foreground" Value="DarkCyan" />
-    </Style>
-    <Style x:Key="QuotesStyle" TargetType="{x:Type Run}">
-      <Setter Property="Foreground" Value="Maroon" />
-    </Style>
-    <Style x:Key="TextStyle" TargetType="{x:Type Run}">
-      <Setter Property="Foreground" Value="Navy" />
-    </Style>
-    <Style x:Key="AttributeStyle" TargetType="{x:Type Run}">
-      <Setter Property="Foreground" Value="Black" />
-    </Style>
-    <Style TargetType="{x:Type Paragraph}">
-      <Setter Property="FontFamily" Value="Consolas" />
-      <Setter Property="TextAlignment" Value="Left" />
-      <Setter Property="Background" Value="White" />
-    </Style>
-  </Window.Resources>
+    x:Class="StyleSnooper.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Name="window"
+    Title="WPF Style Snooper"
+    Width="1000"
+    Height="800"
+    xml:lang="en-US">
 
-  <DockPanel>
-    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="10">
-      <Label DockPanel.Dock="Left" Name="typeLabel" Content="Choose a type" Width="100"/>
-      <ComboBox DockPanel.Dock="Left" 
-                Name="typeComboBox" 
-                Width="200" 
-                IsSynchronizedWithCurrentItem="True" 
-                ItemsSource="{Binding Path=ElementTypes, ElementName=window, Mode=OneWay}"
-                DisplayMemberPath="Name" 
-                SelectionChanged="ShowStyle"/>
-      <Button DockPanel.Dock="Right" Click="OnLoadClick" Height="23" Width="75" Name="button1" Margin="10,0,0,0">Load</Button>
-      <TextBox DockPanel.Dock="Right" Name="AsmName" IsReadOnly="True" Height="26" MinWidth="200"/>
+    <Window.Resources>
+        <Style x:Key="BracketStyle" TargetType="{x:Type Run}">
+            <Setter Property="Foreground" Value="Blue" />
+        </Style>
+        <Style x:Key="ElementStyle" TargetType="{x:Type Run}">
+            <Setter Property="Foreground" Value="DarkCyan" />
+        </Style>
+        <Style x:Key="QuotesStyle" TargetType="{x:Type Run}">
+            <Setter Property="Foreground" Value="Maroon" />
+        </Style>
+        <Style x:Key="TextStyle" TargetType="{x:Type Run}">
+            <Setter Property="Foreground" Value="Navy" />
+        </Style>
+        <Style x:Key="AttributeStyle" TargetType="{x:Type Run}">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style TargetType="{x:Type Paragraph}">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="Background" Value="White" />
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <DockPanel
+            Margin="10"
+            DockPanel.Dock="Top"
+            LastChildFill="False">
+            <Label
+                Name="typeLabel"
+                Width="100"
+                Content="Choose a style"
+                DockPanel.Dock="Left" />
+            <ComboBox
+                Name="typeComboBox"
+                Width="300"
+                DisplayMemberPath="DisplayName"
+                DockPanel.Dock="Left"
+                IsSynchronizedWithCurrentItem="True"
+                ItemsSource="{Binding Path=Styles, ElementName=window, Mode=OneWay}"
+                SelectionChanged="ShowStyle" />
+            <Button
+                Name="button1"
+                Width="75"
+                Height="23"
+                Margin="10,0,0,0"
+                Click="OnLoadClick"
+                DockPanel.Dock="Right">
+                Load
+            </Button>
+            <TextBox
+                Name="AsmName"
+                Height="26"
+                MinWidth="200"
+                DockPanel.Dock="Right"
+                IsReadOnly="True" />
+        </DockPanel>
+        <StackPanel
+            Margin="10,0"
+            DockPanel.Dock="Top"
+            Orientation="Horizontal">
+            <Label
+                Name="namespaceLabel"
+                Width="100"
+                Content="Namespace" />
+            <Label Name="namespaceValue" Content="{Binding ElementName=window, Path=Styles/ElementType.Namespace}" />
+        </StackPanel>
+
+        <FlowDocumentScrollViewer
+            Name="styleTextBox"
+            Padding="0"
+            Background="White"
+            FontFamily="Consolas" />
     </DockPanel>
-    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10,0">
-      <Label Name="namespaceLabel" Content="Namespace" Width="100"/>
-      <Label Name="namespaceValue" Content="{Binding ElementName=window, Path=ElementTypes/Namespace}"/>
-    </StackPanel>
 
-    <FlowDocumentScrollViewer Name="styleTextBox" FontFamily="Consolas" Background="White" Padding="0" />
-  </DockPanel>
-  
 </Window>
