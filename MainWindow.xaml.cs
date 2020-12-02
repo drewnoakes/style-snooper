@@ -14,7 +14,7 @@ using System.Xml;
 
 namespace StyleSnooper
 {
-    public partial class MainWindow : INotifyPropertyChanged
+    public sealed partial class MainWindow : INotifyPropertyChanged
     {
         private readonly Style _bracketStyle, _elementStyle, _quotesStyle, _textStyle, _attributeStyle;
 
@@ -295,7 +295,7 @@ namespace StyleSnooper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
