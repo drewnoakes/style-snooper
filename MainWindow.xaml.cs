@@ -17,7 +17,6 @@ namespace StyleSnooper
     public partial class MainWindow : INotifyPropertyChanged
     {
         private readonly Style _bracketStyle, _elementStyle, _quotesStyle, _textStyle, _attributeStyle;
-        private readonly Microsoft.Win32.OpenFileDialog _openFileDialog;
 
         public MainWindow()
         {
@@ -34,14 +33,6 @@ namespace StyleSnooper
 
             // start out by looking at Button
             CollectionViewSource.GetDefaultView(Styles).MoveCurrentTo(Styles.Single(s =>s.ElementType == typeof(Button)));
-
-            // create the file open dialog
-            _openFileDialog = new Microsoft.Win32.OpenFileDialog
-            {
-                CheckFileExists = true,
-                Multiselect = false,
-                Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll"
-            };
         }
 
         public List<StyleModel> Styles { get; private set; }
@@ -125,13 +116,21 @@ namespace StyleSnooper
 
         private void OnLoadClick(object sender, RoutedEventArgs e)
         {
-            if (_openFileDialog.ShowDialog(this) != true)
+            // create the file open dialog
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                CheckFileExists = true,
+                Multiselect = false,
+                Filter = "Assemblies (*.exe;*.dll)|*.exe;*.dll"
+            };
+
+            if (openFileDialog.ShowDialog(this) != true)
                 return;
 
             try
             {
-                AsmName.Text = _openFileDialog.FileName;
-                var styles = GetStyles(Assembly.LoadFile(_openFileDialog.FileName));
+                AsmName.Text = openFileDialog.FileName;
+                var styles = GetStyles(Assembly.LoadFile(openFileDialog.FileName));
                 if (styles.Count == 0)
                 {
                     MessageBox.Show("Assembly does not contain any compatible types.");
