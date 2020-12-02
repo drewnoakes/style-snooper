@@ -3,5 +3,6 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net45</TargetFramework>
     <UseWPF>true</UseWPF>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 </Project>
