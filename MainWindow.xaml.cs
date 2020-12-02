@@ -156,8 +156,7 @@ namespace StyleSnooper
             if (styleTextBox == null) return;
 
             // see which type is selected
-            var style = typeComboBox.SelectedValue as StyleModel;
-            if (style != null)
+            if (typeComboBox.SelectedValue is StyleModel style)
             {
                 string serializedStyle;
                 var success = TrySerializeStyle(style.ResourceKey, out serializedStyle);
@@ -181,8 +180,7 @@ namespace StyleSnooper
             if (resourceKey != null)
             {
                 // try to get the default style for the type
-                var style = Application.Current.TryFindResource(resourceKey) as Style;
-                if (style != null)
+                if (Application.Current.TryFindResource(resourceKey) is Style style)
                 {
                     // try to serialize the style
                     try
