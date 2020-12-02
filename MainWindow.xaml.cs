@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -233,6 +234,10 @@ namespace StyleSnooper
                                     {
                                         AddRun(paragraph, _textStyle, "{x:Type " + reader.Value + "}");
                                     }
+                                    else if (reader.Name == "Margin" || reader.Name == "Padding")
+                                    {
+                                        AddRun(paragraph, _textStyle, SimplifyThickness(reader.Value));
+                                    }
                                     else
                                     {
                                         AddRun(paragraph, _textStyle, reader.Value);
@@ -265,7 +270,10 @@ namespace StyleSnooper
                             // text content of a tag, e.g. the text "Do This" in <Button>Do This</Button>
                             if (reader.NodeType == XmlNodeType.Text)
                             {
-                                AddRun(paragraph, _textStyle, reader.ReadContentAsString());
+                                var value = reader.ReadContentAsString();
+                                if (reader.Name == "Thickness")
+                                    value = SimplifyThickness(value);
+                                AddRun(paragraph, _textStyle, value);
                             }
 
                             AddRun(paragraph, _bracketStyle, "</");
@@ -282,6 +290,17 @@ namespace StyleSnooper
                 document.Blocks.Add(new Paragraph(new Run(serializedStyle)) {TextAlignment = TextAlignment.Left});
             }
             return document;
+        }
+
+        private static string SimplifyThickness(string s)
+        {
+            var four = Regex.Match(s, @"(-?[\d+]),\1,\1,\1");
+            if (four.Success)
+                return four.Groups[1].Value;
+            var two = Regex.Match(s, @"(-?[\d+]),(-?[\d+]),\1,\2");
+            if (two.Success)
+                return $"{two.Groups[1].Value},{two.Groups[2].Value}";
+            return s;
         }
 
         /// <summary>
