@@ -70,7 +70,7 @@ namespace StyleSnooper
             return typeList.ToArray();
         }
 
-        List<StyleModel> GetStyles(Assembly assembly)
+        static List<StyleModel> GetStyles(Assembly assembly)
         {
             var styles = new List<StyleModel>();
             var types = GetFrameworkElementTypesFromAssembly(assembly);
@@ -81,7 +81,7 @@ namespace StyleSnooper
             return styles;
         }
 
-        List<StyleModel> GetStyles(Type type)
+        static List<StyleModel> GetStyles(Type type)
         {
             var styles = new List<StyleModel>();
             // make an instance of the type and get its default style key
@@ -103,7 +103,7 @@ namespace StyleSnooper
             return styles;
         }
 
-        private List<StyleModel> GetStylesFromStaticProperties(FrameworkElement element)
+        private static List<StyleModel> GetStylesFromStaticProperties(FrameworkElement element)
         {
             var styles = new List<StyleModel>();
 
