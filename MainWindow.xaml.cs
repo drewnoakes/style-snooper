@@ -205,44 +205,45 @@ namespace StyleSnooper
                         if (reader.IsStartElement()) // opening tag, e.g. <Button
                         {
                             // indentation
-                            AddRun(paragraph, _textStyle, new string(' ', indent * 4));
+                            paragraph.AddRun(_textStyle, new string(' ', indent * 4));
 
-                            AddRun(paragraph, _bracketStyle, "<");
-                            AddRun(paragraph, _elementStyle, reader.Name);
+                            paragraph.AddRun(_bracketStyle, "<");
+                            paragraph.AddRun(_elementStyle, reader.Name);
                             if (reader.HasAttributes)
                             {
                                 // write tag attributes
                                 while (reader.MoveToNextAttribute())
                                 {
-                                    AddRun(paragraph, _attributeStyle, " " + reader.Name);
-                                    AddRun(paragraph, _bracketStyle, "=");
-                                    AddRun(paragraph, _quotesStyle, "\"");
+                                    paragraph.AddRun(_attributeStyle, " " + reader.Name);
+                                    paragraph.AddRun(_bracketStyle, "=");
+                                    paragraph.AddRun(_quotesStyle, "\"");
                                     if (reader.Name == "TargetType") // target type fix - should use the Type MarkupExtension
                                     {
-                                        AddRun(paragraph, _textStyle, "{x:Type " + reader.Value + "}");
+                                        paragraph.AddRun(_textStyle, "{x:Type " + reader.Value + "}");
                                     }
                                     else if (reader.Name == "Margin" || reader.Name == "Padding")
                                     {
-                                        AddRun(paragraph, _textStyle, SimplifyThickness(reader.Value));
+                                        paragraph.AddRun(_textStyle, SimplifyThickness(reader.Value));
                                     }
                                     else
                                     {
-                                        AddRun(paragraph, _textStyle, reader.Value);
+                                        paragraph.AddRun(_textStyle, reader.Value);
                                     }
-                                    AddRun(paragraph, _quotesStyle, "\"");
+
+                                    paragraph.AddRun(_quotesStyle, "\"");
                                 }
                                 reader.MoveToElement();
                             }
                             if (reader.IsEmptyElement) // empty tag, e.g. <Button />
                             {
-                                AddRun(paragraph, _bracketStyle, " />");
-                                paragraph.Inlines.Add(new LineBreak());
+                                paragraph.AddRun(_bracketStyle, " />");
+                                paragraph.AddLineBreak();
                                 --indent;
                             }
                             else // non-empty tag, e.g. <Button>
                             {
-                                AddRun(paragraph, _bracketStyle, ">");
-                                paragraph.Inlines.Add(new LineBreak());
+                                paragraph.AddRun(_bracketStyle, ">");
+                                paragraph.AddLineBreak();
                             }
 
                             ++indent;
@@ -252,7 +253,7 @@ namespace StyleSnooper
                             --indent;
 
                             // indentation
-                            AddRun(paragraph, _textStyle, new string(' ', indent * 4));
+                            paragraph.AddRun(_textStyle, new string(' ', indent * 4));
 
                             // text content of a tag, e.g. the text "Do This" in <Button>Do This</Button>
                             if (reader.NodeType == XmlNodeType.Text)
@@ -260,13 +261,13 @@ namespace StyleSnooper
                                 var value = reader.ReadContentAsString();
                                 if (reader.Name == "Thickness")
                                     value = SimplifyThickness(value);
-                                AddRun(paragraph, _textStyle, value);
+                                paragraph.AddRun(_textStyle, value);
                             }
 
-                            AddRun(paragraph, _bracketStyle, "</");
-                            AddRun(paragraph, _elementStyle, reader.Name);
-                            AddRun(paragraph, _bracketStyle, ">");
-                            paragraph.Inlines.Add(new LineBreak());
+                            paragraph.AddRun(_bracketStyle, "</");
+                            paragraph.AddRun(_elementStyle, reader.Name);
+                            paragraph.AddRun(_bracketStyle, ">");
+                            paragraph.AddLineBreak();
                         }
                     }
                     document.Blocks.Add(paragraph);
@@ -288,17 +289,6 @@ namespace StyleSnooper
             if (two.Success)
                 return $"{two.Groups[1].Value},{two.Groups[2].Value}";
             return s;
-        }
-
-        /// <summary>
-        /// Adds a span with the specified text and style.
-        /// </summary>
-        /// <param name="par"></param>
-        /// <param name="style"></param>
-        /// <param name="s"></param>
-        private static void AddRun(Paragraph par, Style style, string s)
-        {
-            par.Inlines.Add(new Run(s) {Style = style});
         }
 
         #region INotifyPropertyChanged
