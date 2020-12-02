@@ -158,8 +158,7 @@ namespace StyleSnooper
             // see which type is selected
             if (typeComboBox.SelectedValue is StyleModel style)
             {
-                string serializedStyle;
-                var success = TrySerializeStyle(style.ResourceKey, out serializedStyle);
+                var success = TrySerializeStyle(style.ResourceKey, out var serializedStyle);
 
                 // show the style in a document viewer
                 styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
