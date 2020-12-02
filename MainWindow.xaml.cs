@@ -89,12 +89,10 @@ namespace StyleSnooper
             {
                 var element = (FrameworkElement)Activator.CreateInstance(type, false);
                 var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
-                styles.Add(new StyleModel
-                {
-                    DisplayName = type.Name,
-                    ResourceKey = defaultStyleKey,
-                    ElementType = type,
-                });
+                styles.Add(new StyleModel(
+                    DisplayName: type.Name,
+                    ResourceKey: defaultStyleKey,
+                    ElementType: type));
 
                 var staticPropertyStyles = GetStylesFromStaticProperties(element);
                 styles.AddRange(staticPropertyStyles);
@@ -115,12 +113,10 @@ namespace StyleSnooper
             {
                 var elementType = element.GetType();
                 var resourceKey = property.GetValue(element);
-                styles.Add(new StyleModel
-                {
-                    DisplayName = $"{elementType.Name}.{property.Name}",
-                    ResourceKey = resourceKey,
-                    ElementType = elementType,
-                });
+                styles.Add(new StyleModel(
+                    DisplayName: $"{elementType.Name}.{property.Name}",
+                    ResourceKey: resourceKey,
+                    ElementType: elementType));
             }
 
             return styles;

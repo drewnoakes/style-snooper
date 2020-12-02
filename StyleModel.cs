@@ -2,10 +2,5 @@
 
 namespace StyleSnooper
 {
-    public class StyleModel
-    {
-        public string DisplayName { get; set; }
-        public object ResourceKey { get; set; }
-        public Type ElementType { get; set; }
-    }
+    public sealed record StyleModel(string DisplayName, object ResourceKey, Type ElementType);
 }
