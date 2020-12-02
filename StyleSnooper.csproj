@@ -46,6 +46,7 @@
     <VisualStudio />
   </ProjectExtensions>
   <ItemGroup>
+    <Compile Include="StyleModel.cs" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationFramework.Aero" />
