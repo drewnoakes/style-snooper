@@ -20,7 +20,7 @@ namespace StyleSnooper
 
         public MainWindow()
         {
-            Styles = GetStyles(typeof(FrameworkElement).Assembly);
+            Styles = GetStyles(typeof(FrameworkElement).Assembly).ToList();
 
             InitializeComponent();
 
@@ -37,11 +37,11 @@ namespace StyleSnooper
 
         public List<StyleModel> Styles { get; private set; }
 
-        private static Type[] GetFrameworkElementTypesFromAssembly(Assembly assembly)
+        private static IEnumerable<Type> GetFrameworkElementTypesFromAssembly(Assembly assembly)
         {
-            // create a list of all types in PresentationFramework that are non-abstract,
+            // Returns all types in the specified assembly that are non-abstract,
             // and non-generic, derive from FrameworkElement, and have a default constructor
-            var typeList = new List<Type>();
+
             foreach (var type in assembly.GetTypes())
             {
                 if (// type.IsPublic && // maybe we wanna peek at nonpublic ones?
@@ -52,51 +52,40 @@ namespace StyleSnooper
                         type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null) != null // allow a nonpublic ctor
                     ))
                 {
-                    typeList.Add(type);
+                    yield return type;
                 }
             }
-
-            // sort the types by name
-            typeList.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-
-            return typeList.ToArray();
         }
 
-        static List<StyleModel> GetStyles(Assembly assembly)
+        private static IEnumerable<StyleModel> GetStyles(Assembly assembly)
         {
-            var styles = new List<StyleModel>();
-            var types = GetFrameworkElementTypesFromAssembly(assembly);
-            foreach(var type in types)
-            {
-                styles.AddRange(GetStyles(type));
-            }
-            return styles;
+            return GetFrameworkElementTypesFromAssembly(assembly)
+                .OrderBy(type => type.Name, StringComparer.Ordinal)
+                .SelectMany(GetStyles);
         }
 
-        static List<StyleModel> GetStyles(Type type)
+        private static IEnumerable<StyleModel> GetStyles(Type type)
         {
-            var styles = new List<StyleModel>();
             // make an instance of the type and get its default style key
             if (type.GetConstructor(Type.EmptyTypes) != null)
             {
                 var element = (FrameworkElement)Activator.CreateInstance(type, false);
                 var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
-                styles.Add(new StyleModel(
+                
+                yield return new StyleModel(
                     DisplayName: type.Name,
                     ResourceKey: defaultStyleKey,
-                    ElementType: type));
+                    ElementType: type);
 
-                var staticPropertyStyles = GetStylesFromStaticProperties(element);
-                styles.AddRange(staticPropertyStyles);
-
+                foreach (var styleModel in GetStylesFromStaticProperties(element))
+                {
+                    yield return styleModel;
+                }
             }
-            return styles;
         }
 
-        private static List<StyleModel> GetStylesFromStaticProperties(FrameworkElement element)
+        private static IEnumerable<StyleModel> GetStylesFromStaticProperties(FrameworkElement element)
         {
-            var styles = new List<StyleModel>();
-
             var properties = element.GetType()
                 .GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
                 .Where(p => p.Name.EndsWith("StyleKey") && p.PropertyType == typeof(ResourceKey));
@@ -105,13 +94,12 @@ namespace StyleSnooper
             {
                 var elementType = element.GetType();
                 var resourceKey = property.GetValue(element);
-                styles.Add(new StyleModel(
+                
+                yield return new StyleModel(
                     DisplayName: $"{elementType.Name}.{property.Name}",
                     ResourceKey: resourceKey,
-                    ElementType: elementType));
+                    ElementType: elementType);
             }
-
-            return styles;
         }
 
         private void OnLoadClick(object sender, RoutedEventArgs e)
@@ -130,7 +118,7 @@ namespace StyleSnooper
             try
             {
                 AsmName.Text = openFileDialog.FileName;
-                var styles = GetStyles(Assembly.LoadFile(openFileDialog.FileName));
+                var styles = GetStyles(Assembly.LoadFile(openFileDialog.FileName)).ToList();
                 if (styles.Count == 0)
                 {
                     MessageBox.Show("Assembly does not contain any compatible types.");
