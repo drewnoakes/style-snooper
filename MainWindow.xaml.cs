@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace StyleSnooper
 {
@@ -25,14 +26,14 @@ namespace StyleSnooper
             InitializeComponent();
 
             // get syntax coloring styles
-            _bracketStyle   = (Style)Resources["BracketStyle"];
-            _elementStyle   = (Style)Resources["ElementStyle"];
-            _quotesStyle    = (Style)Resources["QuotesStyle"];
-            _textStyle      = (Style)Resources["TextStyle"];
+            _bracketStyle = (Style)Resources["BracketStyle"];
+            _elementStyle = (Style)Resources["ElementStyle"];
+            _quotesStyle = (Style)Resources["QuotesStyle"];
+            _textStyle = (Style)Resources["TextStyle"];
             _attributeStyle = (Style)Resources["AttributeStyle"];
 
             // start out by looking at Button
-            CollectionViewSource.GetDefaultView(Styles).MoveCurrentTo(Styles.Single(s =>s.ElementType == typeof(Button)));
+            CollectionViewSource.GetDefaultView(Styles).MoveCurrentTo(Styles.Single(s => s.ElementType == typeof(Button)));
         }
 
         public List<StyleModel> Styles { get; private set; }
@@ -71,7 +72,7 @@ namespace StyleSnooper
             {
                 var element = (FrameworkElement)Activator.CreateInstance(type, false);
                 var defaultStyleKey = element.GetValue(DefaultStyleKeyProperty);
-                
+
                 yield return new StyleModel(
                     DisplayName: type.Name,
                     ResourceKey: defaultStyleKey,
@@ -94,7 +95,7 @@ namespace StyleSnooper
             {
                 var elementType = element.GetType();
                 var resourceKey = property.GetValue(element);
-                
+
                 yield return new StyleModel(
                     DisplayName: $"{elementType.Name}.{property.Name}",
                     ResourceKey: resourceKey,
@@ -144,8 +145,10 @@ namespace StyleSnooper
             {
                 var success = TrySerializeStyle(style.ResourceKey, out var serializedStyle);
 
+                var styleXml = CleanupStyle(serializedStyle);
+
                 // show the style in a document viewer
-                styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
+                styleTextBox.Document = CreateFlowDocument(success, styleXml.ToString());
             }
         }
 
@@ -169,7 +172,7 @@ namespace StyleSnooper
                     try
                     {
                         var stringWriter = new StringWriter();
-                        var xmlTextWriter = new XmlTextWriter(stringWriter) {Formatting = Formatting.Indented};
+                        var xmlTextWriter = new XmlTextWriter(stringWriter) { Formatting = Formatting.Indented };
                         System.Windows.Markup.XamlWriter.Save(style, xmlTextWriter);
                         serializedStyle = stringWriter.ToString();
 
@@ -204,11 +207,12 @@ namespace StyleSnooper
                     {
                         if (reader.IsStartElement()) // opening tag, e.g. <Button
                         {
+                            string elementName = reader.Name;
                             // indentation
                             paragraph.AddRun(_textStyle, new string(' ', indent * 4));
 
                             paragraph.AddRun(_bracketStyle, "<");
-                            paragraph.AddRun(_elementStyle, reader.Name);
+                            paragraph.AddRun(_elementStyle, elementName);
                             if (reader.HasAttributes)
                             {
                                 // write tag attributes
@@ -231,7 +235,10 @@ namespace StyleSnooper
                                     }
 
                                     paragraph.AddRun(_quotesStyle, "\"");
+                                    paragraph.AddLineBreak();
+                                    paragraph.AddRun(_textStyle, new string(' ', indent * 4 + elementName.Length + 1));
                                 }
+                                paragraph.RemoveLastLineBreak();
                                 reader.MoveToElement();
                             }
                             if (reader.IsEmptyElement) // empty tag, e.g. <Button />
@@ -275,7 +282,7 @@ namespace StyleSnooper
             }
             else // no style found
             {
-                document.Blocks.Add(new Paragraph(new Run(serializedStyle)) {TextAlignment = TextAlignment.Left});
+                document.Blocks.Add(new Paragraph(new Run(serializedStyle)) { TextAlignment = TextAlignment.Left });
             }
             return document;
         }
@@ -301,5 +308,80 @@ namespace StyleSnooper
         }
 
         #endregion
+
+        private static readonly XNamespace xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        private static readonly XNamespace xmlns_s = "clr-namespace:System;assembly=mscorlib";
+        private static readonly XNamespace xmlns_x = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        private XDocument CleanupStyle(string serializedStyle)
+        {
+            XDocument styleXml = XDocument.Parse(serializedStyle);
+
+            RemoveEmptyResources(styleXml);
+            SimplifyValues(styleXml);
+
+            return styleXml;
+        }
+
+        private void RemoveEmptyResources(XDocument styleXml)
+        {
+            foreach (var elt in styleXml.Descendants())
+            {
+                var localName = elt.Name.LocalName;
+
+                var eltResources = elt.Element(xmlns + $"{localName}.Resources");
+                var eltResourceDictionary = eltResources?.Element(xmlns + "ResourceDictionary");
+
+                if (eltResourceDictionary?.IsEmpty ?? false)
+                    eltResources.Remove();
+            }
+        }
+
+        private void SimplifyValues(XDocument styleXml)
+        {
+            foreach (var elt in styleXml.Descendants())
+            {
+                var localName = elt.Name.LocalName;
+
+                var eltValueNode = elt.Element(xmlns + $"{localName}.Value");
+                var eltValue = eltValueNode?.Elements().SingleOrDefault();
+
+                switch (eltValue?.Name)
+                {
+                    case { } name when name == xmlns + "SolidColorBrush":
+                        elt.SetAttributeValue("Value", eltValue.Value);
+                        eltValueNode.Remove();
+                        break;
+                    case { } name when name == xmlns + "DynamicResource":
+                        elt.SetAttributeValue("Value", $"{{DynamicResource {eltValue.Attribute("ResourceKey")?.Value}}}");
+                        eltValueNode.Remove();
+                        break;
+                    case { } name when name == xmlns + "StaticResource":
+                        elt.SetAttributeValue("Value", $"{{StaticResource {eltValue.Attribute("ResourceKey")?.Value}}}");
+                        eltValueNode.Remove();
+                        break;
+                    case { } name when name.Namespace == xmlns_s:
+                        elt.SetAttributeValue("Value", eltValue.Value);
+                        eltValueNode.Remove();
+                        break;
+                    case { } name when name == xmlns + "Thickness":
+                        elt.SetAttributeValue("Value", eltValue.Value);
+                        eltValueNode.Remove();
+                        break;
+                    case { } name when name == xmlns_x + "Static":
+                        {
+                            var value = eltValue.Attribute("Member")?.Value;
+                            value = value?.Split('.').Last();
+                            if (value != null)
+                            {
+                                elt.SetAttributeValue("Value", value);
+                                eltValueNode.Remove();
+                            }
+                            break;
+                        }
+                }
+
+            }
+        }
     }
 }
