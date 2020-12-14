@@ -145,7 +145,10 @@ namespace StyleSnooper
             {
                 var success = TrySerializeStyle(style.ResourceKey, out var serializedStyle);
 
-                serializedStyle = CleanupStyle(serializedStyle);
+                if (success)
+                {
+                    serializedStyle = CleanupStyle(serializedStyle);
+                }
 
                 // show the style in a document viewer
                 styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
