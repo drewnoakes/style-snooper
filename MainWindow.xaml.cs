@@ -145,10 +145,10 @@ namespace StyleSnooper
             {
                 var success = TrySerializeStyle(style.ResourceKey, out var serializedStyle);
 
-                var styleXml = CleanupStyle(serializedStyle);
+                serializedStyle = CleanupStyle(serializedStyle);
 
                 // show the style in a document viewer
-                styleTextBox.Document = CreateFlowDocument(success, styleXml.ToString());
+                styleTextBox.Document = CreateFlowDocument(success, serializedStyle);
             }
         }
 
@@ -313,14 +313,14 @@ namespace StyleSnooper
         private static readonly XNamespace xmlns_s = "clr-namespace:System;assembly=mscorlib";
         private static readonly XNamespace xmlns_x = "http://schemas.microsoft.com/winfx/2006/xaml";
 
-        private static XDocument CleanupStyle(string serializedStyle)
+        private static string CleanupStyle(string serializedStyle)
         {
             XDocument styleXml = XDocument.Parse(serializedStyle);
 
             RemoveEmptyResources(styleXml);
             SimplifyStyleSetterValues(styleXml);
 
-            return styleXml;
+            return styleXml.ToString();
         }
 
         private static void RemoveEmptyResources(XDocument styleXml)
