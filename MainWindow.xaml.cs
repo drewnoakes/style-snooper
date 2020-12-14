@@ -313,7 +313,7 @@ namespace StyleSnooper
         private static readonly XNamespace xmlns_s = "clr-namespace:System;assembly=mscorlib";
         private static readonly XNamespace xmlns_x = "http://schemas.microsoft.com/winfx/2006/xaml";
 
-        private XDocument CleanupStyle(string serializedStyle)
+        private static XDocument CleanupStyle(string serializedStyle)
         {
             XDocument styleXml = XDocument.Parse(serializedStyle);
 
@@ -323,7 +323,7 @@ namespace StyleSnooper
             return styleXml;
         }
 
-        private void RemoveEmptyResources(XDocument styleXml)
+        private static void RemoveEmptyResources(XDocument styleXml)
         {
             foreach (var elt in styleXml.Descendants())
             {
@@ -337,7 +337,7 @@ namespace StyleSnooper
             }
         }
 
-        private void SimplifyValues(XDocument styleXml)
+        private static void SimplifyValues(XDocument styleXml)
         {
             foreach (var elt in styleXml.Descendants())
             {
