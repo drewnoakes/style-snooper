@@ -318,7 +318,7 @@ namespace StyleSnooper
             XDocument styleXml = XDocument.Parse(serializedStyle);
 
             RemoveEmptyResources(styleXml);
-            SimplifyValues(styleXml);
+            SimplifyStyleSetterValues(styleXml);
 
             return styleXml;
         }
@@ -337,7 +337,7 @@ namespace StyleSnooper
             }
         }
 
-        private static void SimplifyValues(XDocument styleXml)
+        private static void SimplifyStyleSetterValues(XDocument styleXml)
         {
             foreach (var elt in styleXml.Descendants())
             {
