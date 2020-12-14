@@ -349,7 +349,7 @@ namespace StyleSnooper
                 switch (eltValue?.Name)
                 {
                     case { } name when name == xmlns + "SolidColorBrush":
-                        elt.SetAttributeValue("Value", eltValue.Value);
+                        elt.SetAttributeValue("Value", SimplifyHexColor(eltValue.Value));
                         eltValueNode.Remove();
                         break;
                     case { } name when name == xmlns + "DynamicResource":
@@ -382,6 +382,16 @@ namespace StyleSnooper
                 }
 
             }
+        }
+        
+        private static string SimplifyHexColor(string hex)
+        {
+            if (hex.Length == 9 && hex.StartsWith("#FF"))
+            {
+                return "#" + hex.Substring(3);
+            }
+
+            return hex;
         }
     }
 }
