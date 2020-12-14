@@ -8,11 +8,6 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="icon.ico" />
-    <None Remove="icon.png" />
-    <None Remove="icon.svg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="icon.ico" />
   </ItemGroup>
 </Project>
