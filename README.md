@@ -11,4 +11,9 @@ though the original source may have been [Walt Tirscher](https://wpfwonderland.w
 These various projects were hosted on blogs which have since yielded broken links to downloads and such.
 Hopefully this repo lasts as long as WPF developers do.
 
-This repo includes some minor stylistic and cosmetic changes.
+[Changes in this repo](https://github.com/drewnoakes/style-snooper/compare/b8529f67ff5cd6b2b6da07dd0bf5e9f053049810...master) include:
+
+- Simplification of output XAML
+- Upgrade from .NET 3.0 to .NET 4.5
+- UI layout improvements
+- Code style and project clean up
