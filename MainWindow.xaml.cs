@@ -365,7 +365,7 @@ namespace StyleSnooper
                         eltValueNode.Remove();
                         break;
                     case { } name when name == xmlns + "Thickness":
-                        elt.SetAttributeValue("Value", eltValue.Value);
+                        elt.SetAttributeValue("Value", SimplifyThickness(eltValue.Value));
                         eltValueNode.Remove();
                         break;
                     case { } name when name == xmlns_x + "Static":
