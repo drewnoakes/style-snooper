@@ -322,6 +322,7 @@ namespace StyleSnooper
 
             RemoveEmptyResources(styleXml);
             SimplifyStyleSetterValues(styleXml);
+            SimplifyAttributeValues(styleXml);
 
             return styleXml.ToString();
         }
@@ -383,10 +384,34 @@ namespace StyleSnooper
                             break;
                         }
                 }
-
             }
         }
-        
+
+        private static void SimplifyAttributeValues(XDocument styleXml)
+        {
+            foreach (var element in styleXml.Descendants())
+            {
+                foreach (var attribute in element.Attributes())
+                {
+                    switch (attribute.Name.LocalName)
+                    {
+                        case "Color":
+                        case "BorderBrush":
+                        case "Fill":
+                        case "StrokeBrush":
+                        case "Background":
+                            attribute.Value = SimplifyHexColor(attribute.Value);
+                            break;
+                        case "BorderThickness":
+                        case "StrokeThickness":
+                        case "CornerRadius":
+                            attribute.Value = SimplifyThickness(attribute.Value);
+                            break;
+                    }
+                }
+            }
+        }
+
         private static string SimplifyHexColor(string hex)
         {
             if (hex.Length == 9 && hex.StartsWith("#FF"))
