@@ -290,17 +290,6 @@ namespace StyleSnooper
             return document;
         }
 
-        private static string SimplifyThickness(string s)
-        {
-            var four = Regex.Match(s, @"(-?[\d+]),\1,\1,\1");
-            if (four.Success)
-                return four.Groups[1].Value;
-            var two = Regex.Match(s, @"(-?[\d+]),(-?[\d+]),\1,\2");
-            if (two.Success)
-                return $"{two.Groups[1].Value},{two.Groups[2].Value}";
-            return s;
-        }
-
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -410,6 +399,17 @@ namespace StyleSnooper
                     }
                 }
             }
+        }
+
+        private static string SimplifyThickness(string s)
+        {
+            var four = Regex.Match(s, @"(-?[\d+]),\1,\1,\1");
+            if (four.Success)
+                return four.Groups[1].Value;
+            var two = Regex.Match(s, @"(-?[\d+]),(-?[\d+]),\1,\2");
+            if (two.Success)
+                return $"{two.Groups[1].Value},{two.Groups[2].Value}";
+            return s;
         }
 
         private static string SimplifyHexColor(string hex)
