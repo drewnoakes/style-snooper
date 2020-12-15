@@ -161,7 +161,7 @@ namespace StyleSnooper
         /// <param name="resourceKey"></param>
         /// <param name="serializedStyle"></param>
         /// <returns></returns>
-        private static bool TrySerializeStyle(object resourceKey, out string serializedStyle)
+        private static bool TrySerializeStyle(object? resourceKey, out string serializedStyle)
         {
             var success = false;
             serializedStyle = "[Style not found]";
@@ -292,9 +292,9 @@ namespace StyleSnooper
 
         #region INotifyPropertyChanged
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -323,10 +323,14 @@ namespace StyleSnooper
                 var localName = elt.Name.LocalName;
 
                 var eltResources = elt.Element(xmlns + $"{localName}.Resources");
-                var eltResourceDictionary = eltResources?.Element(xmlns + "ResourceDictionary");
 
-                if (eltResourceDictionary?.IsEmpty ?? false)
-                    eltResources.Remove();
+                if (eltResources != null)
+                {
+                    var eltResourceDictionary = eltResources.Element(xmlns + "ResourceDictionary");
+
+                    if (eltResourceDictionary?.IsEmpty ?? false)
+                        eltResources.Remove();
+                }
             }
         }
 
@@ -337,7 +341,11 @@ namespace StyleSnooper
                 var localName = elt.Name.LocalName;
 
                 var eltValueNode = elt.Element(xmlns + $"{localName}.Value");
-                var eltValue = eltValueNode?.Elements().SingleOrDefault();
+
+                if (eltValueNode == null)
+                    continue;
+
+                var eltValue = eltValueNode.Elements().SingleOrDefault();
 
                 switch (eltValue?.Name)
                 {

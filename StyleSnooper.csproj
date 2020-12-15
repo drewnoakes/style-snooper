@@ -6,6 +6,7 @@
     <TargetFramework>net45</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>9</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
