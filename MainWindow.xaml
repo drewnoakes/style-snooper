@@ -5,6 +5,7 @@
     xmlns:local="clr-namespace:StyleSnooper"
     Name="window"
     Title="WPF Style Snooper"
+    Icon="icon.ico"
     local:WindowSettings.Save="True"
     xml:lang="en-US">
 
