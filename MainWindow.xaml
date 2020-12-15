@@ -2,10 +2,10 @@
     x:Class="StyleSnooper.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:StyleSnooper"
     Name="window"
     Title="WPF Style Snooper"
-    Width="1000"
-    Height="800"
+    local:WindowSettings.Save="True"
     xml:lang="en-US">
 
     <Window.Resources>
