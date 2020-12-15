@@ -14,5 +14,12 @@ namespace StyleSnooper
         {
             paragraph.Inlines.Add(new LineBreak());
         }
+
+        public static void RemoveLastLineBreak(this Paragraph paragraph)
+        {
+            while (paragraph.Inlines.LastInline is not LineBreak)
+                paragraph.Inlines.Remove(paragraph.Inlines.LastInline);
+            paragraph.Inlines.Remove(paragraph.Inlines.LastInline);
+        }
     }
 }
