@@ -5,5 +5,12 @@
     <TargetFramework>net45</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>9</LangVersion>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon.ico" />
+  </ItemGroup>
 </Project>

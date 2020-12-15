@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Name="window"
     Title="WPF Style Snooper"
+    Icon="icon.ico"
     Width="1000"
     Height="800"
     xml:lang="en-US">

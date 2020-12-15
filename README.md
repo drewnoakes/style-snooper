@@ -17,3 +17,4 @@ Hopefully this repo lasts as long as WPF developers do.
 - Upgrade from .NET 3.0 to .NET 4.5
 - UI layout improvements
 - Code style and project clean up
+- Added an icon. Credits: [CC-BY Lucas Helle, CL](https://thenounproject.com/search/?q=Nose&i=3608372), modified by Wolfgang Kleinschmit.
