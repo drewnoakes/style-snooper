@@ -373,16 +373,16 @@ namespace StyleSnooper
                         eltValueNode.Remove();
                         break;
                     case { } name when name == xmlns_x + "Static":
+                    {
+                        var value = eltValue.Attribute("Member")?.Value;
+                        value = value?.Split('.').Last();
+                        if (value != null)
                         {
-                            var value = eltValue.Attribute("Member")?.Value;
-                            value = value?.Split('.').Last();
-                            if (value != null)
-                            {
-                                elt.SetAttributeValue("Value", value);
-                                eltValueNode.Remove();
-                            }
-                            break;
+                            elt.SetAttributeValue("Value", value);
+                            eltValueNode.Remove();
                         }
+                        break;
+                    }
                 }
             }
         }
